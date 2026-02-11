@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest manifest-version="0.1" xmlns="http://www.tableau.com/xml/extension_manifest">
-  <worksheet-extension id="com.tableau.extension.demo.hello.viz" extension-version="0.1.0">
+  <dashboard-extension id="com.takyunhui.updatepopup" extension-version="1.0.0">
     <default-locale>en_US</default-locale>
+
     <name resource-id="name"/>
-    <description>Hello Viz Extension</description>
-    <author name="tableau" email="projectfrelard@tableau.com" organization="tableau" website="https://www.tableau.com"/>
-    <min-api-version>1.1</min-api-version>
+    <description>Shows an image popup when a dashboard update version changes.</description>
+
+    <author name="TakYunhui" email="admin@example.com" organization="Internal" website="https://takyunhui.github.io/tableau_update_extension/"/>
+    <min-api-version>1.7</min-api-version>
+
     <source-location>
-      <url>http://localhost:8765/Samples/HelloVizExtension/HelloVizExtension.html</url>
+      <url>https://takyunhui.github.io/tableau_update_extension/index.html</url>
     </source-location>
-    <icon/>
-    <encoding id="drop">
-      <display-name>Drop...</display-name>
-    </encoding>
-  </worksheet-extension>
+
+    <icon>iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMBAp+X2ZsAAAAASUVORK5CYII=</icon>
+  </dashboard-extension>
+
   <resources>
     <resource id="name">
-      <text locale="en_US">Hello Viz Extension</text>
+      <text locale="en_US">Dashboard Update Popup</text>
     </resource>
   </resources>
 </manifest>
