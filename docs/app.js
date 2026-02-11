@@ -30,9 +30,10 @@ function storageKey(dashboardId) {
     const config = data?.dashboards?.[dashboardId];
 
     if (!config) {
-      setDebug(`No config for this dashboardId`);
-      return;
-    }
+  setDebug(`No config for this dashboardId`);
+  showPopup({ version: "TEST", title: "테스트", items: ["config 없어도 팝업 뜨면 연결 OK"] }, dashboardId);
+  return;
+}
 
     const seen = localStorage.getItem(storageKey(dashboardId));
     if (seen === config.version) {
