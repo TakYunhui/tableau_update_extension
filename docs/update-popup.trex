@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest manifest-version="0.1" xmlns="http://www.tableau.com/xml/extension_manifest">
-  <worksheet-extension id="com.takyunhui.updatepopup" extension-version="1.0.0">
+  <dashboard-extension id="com.takyunhui.updatepopup" extension-version="1.0.0">
     <default-locale>en_US</default-locale>
 
     <name resource-id="name"/>
@@ -13,7 +13,7 @@
       <url>https://takyunhui.github.io/tableau_update_extension/index.html</url>
     </source-location>
     <icon/>
-  </worksheet-extension>
+  </dashboard-extension>
 
   <resources>
     <resource id="name">
