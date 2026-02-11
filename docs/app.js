@@ -20,7 +20,7 @@ function storageKey(dashboardId) {
     await tableau.extensions.initializeAsync();
 
     const dashboard = tableau.extensions.dashboardContent.dashboard;
-    const dashboardId = dashboard.id;
+    const dashboardName = dashboard.name; // :contentReference[oaicite:3]{index=3}
 
     setDebug(`Loaded. dashboardId=${dashboardId}`);
 
@@ -31,7 +31,7 @@ function storageKey(dashboardId) {
     }
 
     const data = await res.json();
-    const config = data?.dashboards?.[dashboardId];
+    const config = data?.dashboardsByName?.[dashboardName];
 
     if (!config) {
   setDebug(`No config for this dashboardId`);
