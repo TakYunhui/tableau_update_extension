@@ -7,15 +7,22 @@
   <script src="https://tableau.github.io/extensions-api/lib/tableau.extensions.1.latest.js"></script>
 </head>
 <body>
-  <div id="debug" style="color:red; position:fixed; top:10px; left:10px; z-index:99999;">
-    Extension Loaded
-  </div>
-  
-  <div id="overlay" class="hidden">
+  <!-- 디버그: 로드/ID 확인용 (테스트 끝나면 숨겨도 됨) -->
+  <div id="debug"></div>
+
+  <div id="overlay" class="hidden" role="dialog" aria-modal="true">
     <div id="popup">
-      <img id="popupImage" alt="Update Image" />
-      <div class="actions">
-        <label>
+      <button id="closeBtn" class="close" aria-label="닫기">×</button>
+
+      <div class="header">
+        <div id="title" class="title">업데이트 안내</div>
+        <div id="version" class="version"></div>
+      </div>
+
+      <ul id="items" class="items"></ul>
+
+      <div class="footer">
+        <label class="dontshow">
           <input type="checkbox" id="dontShow" />
           다시 보지 않기
         </label>
