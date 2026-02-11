@@ -1,17 +1,22 @@
+// Extensions API 로드 확인
 if (typeof tableau === "undefined") {
-  document.getElementById("debug").textContent = "tableau undefined (API script not loaded)";
+  const d = document.getElementById("debug");
+  if (d) d.textContent = "tableau undefined (API script not loaded)";
   throw new Error("tableau is not defined");
 }
-// ✅ Pages URL 고정 (정확히 이 파일을 fetch)
+
+// 업데이트 설정 JSON 위치
 const CONFIG_URL = "https://takyunhui.github.io/tableau_update_extension/updates.json";
 
+// 디버그 출력
 function setDebug(text) {
   const el = document.getElementById("debug");
   if (el) el.textContent = text;
 }
 
-function storageKey(dashboardId) {
-  return `updatePopup_seenVersion_${dashboardId}`;
+// 다시 보지 않기 저장 키 (dashboard.name 기준)
+function storageKey(dashboardName) {
+  return `updatePopup_seenVersion_${dashboardName}`;
 }
 
 (async function main() {
@@ -20,11 +25,20 @@ function storageKey(dashboardId) {
     await tableau.extensions.initializeAsync();
 
     const dashboard = tableau.extensions.dashboardContent.dashboard;
-    const dashboardName = dashboard.name; // :contentReference[oaicite:3]{index=3}
+    const dashboardName = dashboard.name;
 
-    setDebug(`Loaded. dashboardId=${dashboardId}`);
+    // 🔹 화면 상단에 대시보드 이름 표시 (관리용)
+    const nameEl = document.getElementById("dashboardName");
+    const bar = document.getElementById("statusBar");
+    if (nameEl && bar) {
+      nameEl.textContent = dashboardName || "(no name)";
+      bar.classList.remove("hidden");
+    }
 
-    const res = await fetch(`${CONFIG_URL}?v=${Date.now()}`); // 캐시 방지
+    setDebug(`Loaded. dashboardName=${dashboardName}`);
+
+    // 설정 JSON 로드 (캐시 방지)
+    const res = await fetch(`${CONFIG_URL}?v=${Date.now()}`);
     if (!res.ok) {
       setDebug(`Config fetch failed: ${res.status}`);
       return;
@@ -33,27 +47,28 @@ function storageKey(dashboardId) {
     const data = await res.json();
     const config = data?.dashboardsByName?.[dashboardName];
 
+    // ❌ 이 대시보드에 업데이트 설정이 없으면 종료
     if (!config) {
-  setDebug(`No config for this dashboardId`);
-  showPopup({ version: "TEST", title: "테스트", items: ["config 없어도 팝업 뜨면 연결 OK"] }, dashboardId);
-  return;
-}
+      setDebug("No config for this dashboard");
+      return;
+    }
 
-    const seen = localStorage.getItem(storageKey(dashboardId));
+    // 다시 보지 않기 체크
+    const seen = localStorage.getItem(storageKey(dashboardName));
     if (seen === config.version) {
       setDebug(`Seen version=${seen} (no popup)`);
       return;
     }
 
-    showPopup(config, dashboardId);
+    // 팝업 표시
+    showPopup(config, dashboardName);
   } catch (e) {
     setDebug(`Error: ${e?.message || e}`);
-    // 콘솔도 남김
     console.error(e);
   }
 })();
 
-function showPopup(config, dashboardId) {
+function showPopup(config, dashboardName) {
   const overlay = document.getElementById("overlay");
   const popup = document.getElementById("popup");
   const closeBtn = document.getElementById("closeBtn");
@@ -66,7 +81,7 @@ function showPopup(config, dashboardId) {
   titleEl.textContent = config.title || "업데이트 안내";
   versionEl.textContent = config.version ? `버전: ${config.version}` : "";
 
-  // items 렌더
+  // 변경 사항 목록 렌더
   itemsEl.innerHTML = "";
   const items = Array.isArray(config.items) ? config.items : [];
   if (items.length === 0) {
@@ -81,20 +96,20 @@ function showPopup(config, dashboardId) {
     }
   }
 
-  // 표시
+  // 팝업 표시
   overlay.classList.remove("hidden");
 
   const close = () => {
     if (dontShow.checked && config.version) {
-      localStorage.setItem(storageKey(dashboardId), config.version);
+      localStorage.setItem(storageKey(dashboardName), config.version);
     }
     overlay.classList.add("hidden");
   };
 
-  // overlay 바깥 클릭 = 닫기
+  // 바깥 클릭 시 닫기
   overlay.addEventListener("click", close, { once: true });
 
-  // 팝업 내부 클릭은 overlay로 전파 막기 (안 막으면 내용 눌러도 닫힘)
+  // 팝업 내부 클릭은 전파 차단
   popup.addEventListener("click", (e) => e.stopPropagation());
 
   // X 버튼
