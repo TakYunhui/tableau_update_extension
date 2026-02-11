@@ -1,3 +1,7 @@
+if (typeof tableau === "undefined") {
+  document.getElementById("debug").textContent = "tableau undefined (API script not loaded)";
+  throw new Error("tableau is not defined");
+}
 // ✅ Pages URL 고정 (정확히 이 파일을 fetch)
 const CONFIG_URL = "https://takyunhui.github.io/tableau_update_extension/updates.json";
 
