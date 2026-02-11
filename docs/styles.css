@@ -1,4 +1,18 @@
 body { margin: 0; font-family: sans-serif; }
+
+/* 디버그 영역 */
+#debug {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100000;
+  color: #ff3b30;
+  font-size: 12px;
+  background: rgba(0,0,0,0.35);
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
 .hidden { display: none; }
 
 #overlay {
@@ -13,16 +27,43 @@ body { margin: 0; font-family: sans-serif; }
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-#popup img {
-  max-width: 80vw;
+  width: min(520px, 86vw);
   max-height: 80vh;
-  border-radius: 8px;
+  overflow: auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px 16px 14px;
+  box-sizing: border-box;
 }
 
-.actions {
-  margin-top: 8px;
-  text-align: center;
-  color: #fff;
+.close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
 }
+
+.header { margin-bottom: 10px; }
+.title { font-weight: 700; font-size: 16px; }
+.version { margin-top: 4px; font-size: 12px; color: #666; }
+
+.items {
+  margin: 12px 0 14px;
+  padding-left: 18px;
+}
+
+.items li { margin: 6px 0; font-size: 13px; line-height: 1.35; }
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.dontshow { font-size: 13px; color: #333; }
