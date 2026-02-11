@@ -2,9 +2,23 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Extension Test</title>
+  <title>Update Popup</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://tableau.github.io/extensions-api/lib/tableau.extensions.1.latest.js"></script>
 </head>
 <body>
-  Extension Test OK
+  <div id="overlay" class="hidden">
+    <div id="popup">
+      <img id="popupImage" alt="Update Image" />
+      <div class="actions">
+        <label>
+          <input type="checkbox" id="dontShow" />
+          다시 보지 않기
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
