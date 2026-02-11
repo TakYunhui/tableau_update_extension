@@ -58,13 +58,6 @@ body { margin: 0; font-family: sans-serif; }
 
 .items li { margin: 6px 0; font-size: 13px; line-height: 1.35; }
 
-.footer {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding-top: 10px;
-  border-top: 1px solid #eee;
-}
 
 .dontshow { font-size: 13px; color: #333; }
 
