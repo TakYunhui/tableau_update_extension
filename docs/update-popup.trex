@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension_manifest version="1.0"
+  xmlns="http://www.tableau.com/xml/extension_manifest">
+
+  <extension id="dashboard-update-popup" version="1.0">
+    <name>Dashboard Update Popup</name>
+    <description>Shows an image popup when a dashboard update version changes.</description>
+    <author name="Admin" />
+    <minApiVersion>1.7</minApiVersion>
+  </extension>
+
+  <dashboard_extension>
+    <source-location>
+      <url>index.html</url>
+    </source-location>
+  </dashboard_extension>
+</extension_manifest>
