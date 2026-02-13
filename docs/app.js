@@ -23,18 +23,10 @@ async function fetchJson(url) {
     const dashboard = tableau.extensions.dashboardContent.dashboard;
     const dashboardName = (dashboard.name || "").trim();
 
-    // 상태바 표시
-    const nameEl = document.getElementById("dashboardName");
-    const bar = document.getElementById("statusBar");
-    if (nameEl && bar) {
-      nameEl.textContent = dashboardName || "(no name)";
-      bar.classList.remove("hidden");
-    }
-
     const data = await fetchJson(CONFIG_URL);
     const config = data?.dashboardsByName?.[dashboardName];
 
-    // 업데이트 없으면 종료
+    // 업데이트 없으면 종료 (아무 UI도 안 보임)
     if (!config || !config.version) return;
 
     // 같은 버전 다시보지않기면 종료
