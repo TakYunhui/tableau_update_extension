@@ -21,9 +21,9 @@ async function fetchJson(url) {
     await tableau.extensions.initializeAsync();
 
     const dashboard = tableau.extensions.dashboardContent.dashboard;
-    const dashboardName = dashboard.name;
+    const dashboardName = (dashboard.name || "").trim();
 
-    // (관리용) 대시보드 이름 표시바는 유지/삭제 선택
+    // 상태바 표시
     const nameEl = document.getElementById("dashboardName");
     const bar = document.getElementById("statusBar");
     if (nameEl && bar) {
@@ -34,15 +34,15 @@ async function fetchJson(url) {
     const data = await fetchJson(CONFIG_URL);
     const config = data?.dashboardsByName?.[dashboardName];
 
-    // ✅ 업데이트 내역이 없으면 아무것도 안 함 (확장도 안 보이는 UX)
+    // 업데이트 없으면 종료
     if (!config || !config.version) return;
 
+    // 같은 버전 다시보지않기면 종료
     const seen = localStorage.getItem(storageKey(dashboardName));
-    if (seen === config.version) return; // 이미 본 버전이면 종료
+    if (seen === config.version) return;
 
     showPopup(config, dashboardName);
   } catch (e) {
-    // 운영에선 조용히 실패하게 하고 싶으면 console만 남기고 return해도 됨
     console.error(e);
   }
 })();
@@ -56,9 +56,15 @@ function showPopup(config, dashboardName) {
   const versionEl = document.getElementById("version");
   const itemsEl = document.getElementById("items");
 
+  if (!overlay || !popup || !closeBtn || !titleEl || !versionEl || !itemsEl) {
+    console.error("Popup DOM elements missing");
+    return;
+  }
+
   titleEl.textContent = config.title || "업데이트 안내";
   versionEl.textContent = config.version ? `버전: ${config.version}` : "";
 
+  // items 렌더
   itemsEl.innerHTML = "";
   const items = Array.isArray(config.items) ? config.items : [];
   if (items.length === 0) {
@@ -73,17 +79,51 @@ function showPopup(config, dashboardName) {
     }
   }
 
-  overlay.classList.remove("hidden");
+  // "다시 보지 않기" 버튼(없으면 생성)
+  let dontBtn = document.getElementById("dontShowBtn");
+  if (!dontBtn) {
+    dontBtn = document.createElement("button");
+    dontBtn.id = "dontShowBtn";
+    dontBtn.type = "button";
+    dontBtn.textContent = "다시 보지 않기";
+    dontBtn.style.cssText =
+      "margin-top:10px;padding:8px 10px;border:1px solid #ddd;background:#f7f7f7;border-radius:8px;cursor:pointer;font-size:13px;";
+    popup.appendChild(dontBtn);
+  }
 
-  const close = () => {
-    // ✅ 닫는 순간 해당 버전 “확인 완료” 저장 (체크박스 없음)
+  const hideOnly = () => {
+    overlay.classList.add("hidden");
+  };
+
+  const hideAndSave = () => {
     if (config.version) {
       localStorage.setItem(storageKey(dashboardName), config.version);
     }
     overlay.classList.add("hidden");
   };
 
-  overlay.addEventListener("click", close, { once: true });
-  popup.addEventListener("click", (e) => e.stopPropagation());
-  closeBtn.addEventListener("click", close, { once: true });
+  // 이벤트 꼬임 방지: 기존 핸들러 제거(덮어쓰기)
+  overlay.onclick = (e) => {
+    // 오버레이 배경 클릭만 닫기
+    if (e.target === overlay) hideOnly();
+  };
+
+  closeBtn.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    hideOnly();
+  };
+
+  dontBtn.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    hideAndSave();
+  };
+
+  // 팝업 내부 클릭은 overlay로 안 튀게
+  popup.onclick = (e) => {
+    e.stopPropagation();
+  };
+
+  overlay.classList.remove("hidden");
 }
