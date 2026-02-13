@@ -18,23 +18,31 @@ body { margin: 0; font-family: sans-serif; }
 #overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.55);
+  background: transparent;   /* 🔥 반투명 배경 제거 */
   z-index: 9999;
 }
 
 #popup {
   position: absolute;
-  top: 50%;
+  top: 18vh;                 /* 중앙보다 살짝 위 */
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(520px, 86vw);
-  max-height: 80vh;
+  transform: translateX(-50%);
+  width: min(480px, 88vw);
+  max-height: 70vh;
   overflow: auto;
-  background: #fff;
-  border-radius: 12px;
-  padding: 18px 16px 14px;
+
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px 18px 16px;
   box-sizing: border-box;
+
+  /* 🔥 핵심 */
+  border: 1px solid #e5e5e5;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.15),
+    0 2px 8px rgba(0,0,0,0.08);
 }
+
 
 .close {
   position: absolute;
