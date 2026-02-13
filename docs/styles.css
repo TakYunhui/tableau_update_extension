@@ -24,69 +24,73 @@ body { margin: 0; font-family: sans-serif; }
 
 #popup {
   position: absolute;
-  top: 14vh;                 /* 살짝 위 */
+  top: 10vh;                 /* 더 위로 */
   left: 50%;
   transform: translateX(-50%);
 
-  width: min(680px, 92vw);   /* ✅ 더 넓게 */
-  max-height: 78vh;          /* ✅ 더 크게 */
+  width: min(820px, 94vw);   /* ✅ 더 크게 */
+  max-height: 82vh;          /* ✅ 더 크게 */
   overflow: auto;
 
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 22px 20px 18px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 26px 24px 22px;
   box-sizing: border-box;
 
-  border: 1px solid #e5e5e5;
+  border: 2px solid #d7d7d7; /* ✅ 테두리 더 두껍게 */
   box-shadow:
-    0 14px 38px rgba(0,0,0,0.16),
-    0 3px 10px rgba(0,0,0,0.10);
+    0 22px 60px rgba(0,0,0,0.28),  /* ✅ 진한 그림자 */
+    0 8px 22px rgba(0,0,0,0.18);
 }
+
 
 
 .close {
   position: absolute;
-  top: 6px;
-  right: 8px;
+  top: 10px;
+  right: 12px;
+
+  width: 44px;              /* ✅ 터치/클릭 영역 크게 */
+  height: 44px;
   border: none;
-  background: transparent;
-  font-size: 24px;
+  background: #f2f2f2;       /* ✅ 버튼 영역 보이게 */
+  border-radius: 10px;
+
+  font-size: 28px;           /* ✅ X 자체도 크게 */
   cursor: pointer;
-  line-height: 1;
+  line-height: 44px;
+  text-align: center;
 }
+.close:hover { filter: brightness(0.96); }
 
 .header { margin-bottom: 10px; }
-.title { font-weight: 700; font-size: 18px; }
-.version { margin-top: 6px; font-size: 13px; color: #666; }
+.title { font-weight: 800; font-size: 22px; }
+.version { margin-top: 8px; font-size: 15px; color: #444; }
 
 .items {
-  margin: 12px 0 14px;
-  padding-left: 18px;
+  margin: 16px 0 18px;
+  padding-left: 22px;
 }
 
-.items li { margin: 8px 0; font-size: 14px; line-height: 1.45; }
+.items li {
+  margin: 10px 0;
+  font-size: 16px;          /* ✅ 리스트 글씨 크게 */
+  line-height: 1.55;
+}
+
 
 
 .dontshow { font-size: 13px; color: #333; }
 
 
-.status-bar {
-  position: fixed;
-  top: 8px;
-  left: 8px;
-  z-index: 100001;
-  background: rgba(0,0,0,0.65);
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 12px;
-  max-width: 85vw;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+#dontShowBtn {
+  margin-top: 14px !important;
+  padding: 12px 14px !important;
+  border: 2px solid #d7d7d7 !important;
+  background: #f5f5f5 !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
 }
-
-.status-bar .label {
-  opacity: 0.75;
-  margin-right: 6px;
-}
+#dontShowBtn:hover { filter: brightness(0.98); }
