@@ -24,23 +24,23 @@ body { margin: 0; font-family: sans-serif; }
 
 #popup {
   position: absolute;
-  top: 18vh;                 /* 중앙보다 살짝 위 */
+  top: 14vh;                 /* 살짝 위 */
   left: 50%;
   transform: translateX(-50%);
-  width: min(480px, 88vw);
-  max-height: 70vh;
+
+  width: min(680px, 92vw);   /* ✅ 더 넓게 */
+  max-height: 78vh;          /* ✅ 더 크게 */
   overflow: auto;
 
   background: #ffffff;
   border-radius: 14px;
-  padding: 20px 18px 16px;
+  padding: 22px 20px 18px;
   box-sizing: border-box;
 
-  /* 🔥 핵심 */
   border: 1px solid #e5e5e5;
   box-shadow:
-    0 10px 30px rgba(0,0,0,0.15),
-    0 2px 8px rgba(0,0,0,0.08);
+    0 14px 38px rgba(0,0,0,0.16),
+    0 3px 10px rgba(0,0,0,0.10);
 }
 
 
@@ -56,15 +56,15 @@ body { margin: 0; font-family: sans-serif; }
 }
 
 .header { margin-bottom: 10px; }
-.title { font-weight: 700; font-size: 16px; }
-.version { margin-top: 4px; font-size: 12px; color: #666; }
+.title { font-weight: 700; font-size: 18px; }
+.version { margin-top: 6px; font-size: 13px; color: #666; }
 
 .items {
   margin: 12px 0 14px;
   padding-left: 18px;
 }
 
-.items li { margin: 6px 0; font-size: 13px; line-height: 1.35; }
+.items li { margin: 8px 0; font-size: 14px; line-height: 1.45; }
 
 
 .dontshow { font-size: 13px; color: #333; }
