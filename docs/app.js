@@ -96,8 +96,7 @@ function showPopup(config, dashboardName) {
 
   // 이벤트 꼬임 방지: 기존 핸들러 제거(덮어쓰기)
   overlay.onclick = (e) => {
-    // 오버레이 배경 클릭만 닫기
-    if (e.target === overlay) hideOnly();
+    // 아무 것도 하지 않음
   };
 
   closeBtn.onclick = (e) => {
