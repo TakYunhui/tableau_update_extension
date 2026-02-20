@@ -26,7 +26,7 @@ body { margin: 0; font-family: sans-serif; }
   align-items: flex-start;
 
   padding: clamp(12px, 6vh, 72px) 12px 12px;  /* ✅ 화면 크기에 따라 자동 여백 */
-  background: rgba(0,0,0,0.10);               /* 팝업 인지용(원하면 투명) */
+
 }
 
 #popup{
