@@ -24,7 +24,7 @@ body { margin: 0; font-family: sans-serif; }
   display: flex;
   justify-content: center;
   align-items: flex-start;
-
+  background: transparent;
   padding: clamp(12px, 6vh, 72px) 12px 12px;  /* ✅ 화면 크기에 따라 자동 여백 */
 
 }
