@@ -14,7 +14,10 @@ body { margin: 0; font-family: sans-serif; }
   border-radius: 6px;
 }
 
-.hidden { display: none; }
+/* 기존 #overlay 그대로 두되, 아래 한 줄 추가 */
+#overlay.hidden{
+  display: none;  /* ✅ ID + class 조합이라 #overlay(display:flex) 이김 */
+}
 
 #overlay{
   position: fixed;
