@@ -1,3 +1,4 @@
+// app.js
 if (typeof tableau === "undefined") {
   const d = document.getElementById("debug");
   if (d) d.textContent = "tableau undefined (API script not loaded)";
@@ -42,13 +43,15 @@ async function fetchJson(url) {
 function showPopup(config, dashboardName) {
   const overlay = document.getElementById("overlay");
   const popup = document.getElementById("popup");
-  const closeBtn = document.getElementById("closeBtn");
+  const closeBtn = document.getElementById("closeBtn");     // X 버튼
+  const closeBtn2 = document.getElementById("closeBtn2");   // 하단 닫기 버튼
+  const dontBtn = document.getElementById("dontShowBtn");   // 다시 보지 않기
 
   const titleEl = document.getElementById("title");
   const versionEl = document.getElementById("version");
   const itemsEl = document.getElementById("items");
 
-  if (!overlay || !popup || !closeBtn || !titleEl || !versionEl || !itemsEl) {
+  if (!overlay || !popup || !closeBtn || !closeBtn2 || !dontBtn || !titleEl || !versionEl || !itemsEl) {
     console.error("Popup DOM elements missing");
     return;
   }
@@ -71,18 +74,6 @@ function showPopup(config, dashboardName) {
     }
   }
 
-  // "다시 보지 않기" 버튼(없으면 생성)
-  let dontBtn = document.getElementById("dontShowBtn");
-  if (!dontBtn) {
-    dontBtn = document.createElement("button");
-    dontBtn.id = "dontShowBtn";
-    dontBtn.type = "button";
-    dontBtn.textContent = "다시 보지 않기";
-    dontBtn.style.cssText =
-      "margin-top:10px;padding:8px 10px;border:1px solid #ddd;background:#f7f7f7;border-radius:8px;cursor:pointer;font-size:13px;";
-    popup.appendChild(dontBtn);
-  }
-
   const hideOnly = () => {
     overlay.classList.add("hidden");
   };
@@ -94,17 +85,24 @@ function showPopup(config, dashboardName) {
     overlay.classList.add("hidden");
   };
 
-  // 이벤트 꼬임 방지: 기존 핸들러 제거(덮어쓰기)
-  overlay.onclick = (e) => {
-    // 아무 것도 하지 않음
-  };
+  // ✅ 바깥 클릭으로 닫히지 않게: overlay 클릭 무시
+  overlay.onclick = () => {};
 
+  // X 버튼 닫기
   closeBtn.onclick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     hideOnly();
   };
 
+  // 하단 닫기 버튼
+  closeBtn2.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    hideOnly();
+  };
+
+  // 다시 보지 않기
   dontBtn.onclick = (e) => {
     e.preventDefault();
     e.stopPropagation();
