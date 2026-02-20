@@ -19,18 +19,24 @@ body { margin: 0; font-family: sans-serif; }
 #overlay {
   position: fixed;
   inset: 0;
-  background: transparent;   /* 필요시 rgba(0,0,0,0.10) 로 변경 */
   z-index: 9999;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;   /* 위쪽 기준 */
+  padding: 6vh 0;           /* 위/아래 여백 확보 */
+
+  background: transparent;  /* 필요하면 rgba(0,0,0,0.10) */
 }
 
 #popup {
-  position: absolute;
-  top: 10vh;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;       /* absolute 제거 */
+  top: auto;
+  left: auto;
+  transform: none;
 
   width: min(820px, 94vw);
-  max-height: 82vh;
+  max-height: 88vh;         /* 82 -> 88로 완화 (padding 포함 여유) */
   overflow: auto;
 
   background: #fff;
