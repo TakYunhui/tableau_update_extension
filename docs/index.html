@@ -11,20 +11,22 @@
 
   <div id="overlay" class="hidden" role="dialog" aria-modal="true">
     <div id="popup">
-      <button id="closeBtn" class="close" aria-label="닫기">×</button>
 
+      <!-- ✅ 상단 헤더: 좌(제목/버전) / 우(다시보지않기 + X) -->
       <div class="header">
-        <div id="title" class="title">업데이트 안내</div>
-        <div id="version" class="version"></div>
+        <div class="header-left">
+          <div id="title" class="title">업데이트 안내</div>
+          <div id="version" class="version"></div>
+        </div>
+
+        <div class="header-actions">
+          <button id="dontShowBtn" type="button" class="dont-top">다시 보지 않기</button>
+          <button id="closeBtn" type="button" class="close" aria-label="닫기">×</button>
+        </div>
       </div>
 
       <ul id="items" class="items"></ul>
 
-      <!-- ✅ 하단 고정 버튼 영역 -->
-      <div class="footer">
-        <button id="dontShowBtn" type="button" class="btn secondary">다시 보지 않기</button>
-        <button id="closeBtn2" type="button" class="btn primary">닫기</button>
-      </div>
     </div>
   </div>
 
