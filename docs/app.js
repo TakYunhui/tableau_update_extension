@@ -56,8 +56,14 @@ function showPopup(config, dashboardName) {
   }
 
   titleEl.textContent = config.title || "업데이트 안내";
-  versionEl.textContent = config.version ? `버전: ${config.version}` : "";
 
+  if (config.version) {
+    const datePart = config.version.split("-").slice(0,3).join(".");
+    versionEl.textContent = `업데이트 일자: ${datePart}`;
+  } else {
+    versionEl.textContent = "";
+  }
+  
   // items 렌더
   itemsEl.innerHTML = "";
   const items = Array.isArray(config.items) ? config.items : [];
