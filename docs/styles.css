@@ -1,3 +1,4 @@
+/* styles.css */
 body { margin: 0; font-family: sans-serif; }
 
 /* 디버그 영역 */
@@ -18,18 +19,18 @@ body { margin: 0; font-family: sans-serif; }
 #overlay {
   position: fixed;
   inset: 0;
-  background: transparent;   /* 🔥 반투명 배경 제거 */
+  background: transparent;   /* 필요시 rgba(0,0,0,0.10) 로 변경 */
   z-index: 9999;
 }
 
 #popup {
   position: absolute;
-  top: 10vh;                 /* 더 위로 */
+  top: 10vh;
   left: 50%;
   transform: translateX(-50%);
 
-  width: min(820px, 94vw);   /* ✅ 더 크게 */
-  max-height: 82vh;          /* ✅ 더 크게 */
+  width: min(820px, 94vw);
+  max-height: 82vh;
   overflow: auto;
 
   background: #fff;
@@ -37,30 +38,27 @@ body { margin: 0; font-family: sans-serif; }
   padding: 26px 24px 22px;
   box-sizing: border-box;
 
-  border: 1px solid #e6e6e6;   /* 얇게 */
-  box-shadow: 
-    0 18px 40px rgba(0,0,0,0.18);  /* 🔥 단일, 깔끔한 그림자 */
+  border: 1px solid #e6e6e6;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.18);
 }
-
-
 
 .close {
   position: absolute;
   top: 10px;
   right: 12px;
 
-  width: 44px;              /* ✅ 터치/클릭 영역 크게 */
+  width: 44px;
   height: 44px;
   border: none;
-  background: #f2f2f2;       /* ✅ 버튼 영역 보이게 */
+  background: #f2f2f2;
   border-radius: 10px;
 
-  font-size: 28px;           /* ✅ X 자체도 크게 */
+  font-size: 28px;
   cursor: pointer;
   line-height: 44px;
   text-align: center;
 }
-.close:hover {   background: #e0e0e0;   }
+.close:hover { background: #e0e0e0; }
 
 .header { margin-bottom: 10px; }
 .title { font-weight: 800; font-size: 22px; }
@@ -73,26 +71,48 @@ body { margin: 0; font-family: sans-serif; }
 
 .items li {
   margin: 10px 0;
-  font-size: 16px;          /* ✅ 리스트 글씨 크게 */
+  font-size: 16px;
   line-height: 1.55;
 }
 
+/* ✅ 하단 버튼 영역: 스크롤 시에도 보이게 */
+.footer{
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 
+  padding-top: 14px;
+  margin-top: 10px;
 
-.dontshow { font-size: 13px; color: #333; }
-
-
-#dontShowBtn {
-  margin-top: 14px !important;
-  padding: 12px 14px !important;
-  border: 2px solid #d7d7d7 !important;
-  background: #f5f5f5 !important;
-  border-radius: 12px !important;
-  cursor: pointer !important;
-  font-size: 16px !important;
-  font-weight: 700 !important;
+  background: #fff;
+  border-top: 1px solid #eee;
 }
-#dontShowBtn:hover {
-  background: #e8e8e8 !important;
+
+/* 버튼 공통 */
+.btn{
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* 보조 버튼 */
+.btn.secondary{
+  border: 2px solid #d7d7d7;
+  background: #f5f5f5;
+}
+.btn.secondary:hover{
+  background: #e8e8e8;
   transform: translateY(-1px);
 }
+
+/* 주요 버튼(닫기) */
+.btn.primary{
+  border: 0;
+  background: #111;
+  color: #fff;
+}
+.btn.primary:hover{ opacity: 0.92; }
