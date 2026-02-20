@@ -1,23 +1,9 @@
 /* styles.css */
 body { margin: 0; font-family: sans-serif; }
 
-/* 디버그 영역 */
-#debug {
-  position: fixed;
-  top: 8px;
-  left: 8px;
-  z-index: 100000;
-  color: #ff3b30;
-  font-size: 12px;
-  background: rgba(0,0,0,0.35);
-  padding: 6px 8px;
-  border-radius: 6px;
-}
 
-/* 기존 #overlay 그대로 두되, 아래 한 줄 추가 */
-#overlay.hidden{
-  display: none;  /* ✅ ID + class 조합이라 #overlay(display:flex) 이김 */
-}
+/* ✅ 숨김은 overlay에만 적용해도 충분 */
+#overlay.hidden { display: none; }
 
 #overlay{
   position: fixed;
