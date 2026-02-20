@@ -16,27 +16,23 @@ body { margin: 0; font-family: sans-serif; }
 
 .hidden { display: none; }
 
-#overlay {
+#overlay{
   position: fixed;
   inset: 0;
   z-index: 9999;
 
   display: flex;
   justify-content: center;
-  align-items: flex-start;   /* 위쪽 기준 */
-  padding: 6vh 0;           /* 위/아래 여백 확보 */
+  align-items: flex-start;
 
-  background: transparent;  /* 필요하면 rgba(0,0,0,0.10) */
+  padding: clamp(12px, 6vh, 72px) 12px 12px;  /* ✅ 화면 크기에 따라 자동 여백 */
+  background: rgba(0,0,0,0.10);               /* 팝업 인지용(원하면 투명) */
 }
 
-#popup {
-  position: relative;       /* absolute 제거 */
-  top: auto;
-  left: auto;
-  transform: none;
-
-  width: min(820px, 94vw);
-  max-height: 88vh;         /* 82 -> 88로 완화 (padding 포함 여유) */
+#popup{
+  position: relative;
+  width: min(820px, 100%);
+  max-height: calc(100vh - 24px);             /* ✅ 항상 화면 안 */
   overflow: auto;
 
   background: #fff;
