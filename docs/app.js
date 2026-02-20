@@ -27,7 +27,7 @@ async function fetchJson(url) {
     const data = await fetchJson(CONFIG_URL);
     const config = data?.dashboardsByName?.[dashboardName];
 
-    // 업데이트 없으면 종료 (아무 UI도 안 보임)
+    // 업데이트 없으면 종료
     if (!config || !config.version) return;
 
     // 같은 버전 다시보지않기면 종료
@@ -43,15 +43,14 @@ async function fetchJson(url) {
 function showPopup(config, dashboardName) {
   const overlay = document.getElementById("overlay");
   const popup = document.getElementById("popup");
-  const closeBtn = document.getElementById("closeBtn");     // X 버튼
-  const closeBtn2 = document.getElementById("closeBtn2");   // 하단 닫기 버튼
-  const dontBtn = document.getElementById("dontShowBtn");   // 다시 보지 않기
+  const closeBtn = document.getElementById("closeBtn");
+  const dontBtn = document.getElementById("dontShowBtn");
 
   const titleEl = document.getElementById("title");
   const versionEl = document.getElementById("version");
   const itemsEl = document.getElementById("items");
 
-  if (!overlay || !popup || !closeBtn || !closeBtn2 || !dontBtn || !titleEl || !versionEl || !itemsEl) {
+  if (!overlay || !popup || !closeBtn || !dontBtn || !titleEl || !versionEl || !itemsEl) {
     console.error("Popup DOM elements missing");
     return;
   }
@@ -85,33 +84,24 @@ function showPopup(config, dashboardName) {
     overlay.classList.add("hidden");
   };
 
-  // ✅ 바깥 클릭으로 닫히지 않게: overlay 클릭 무시
+  // ✅ 바깥 클릭으로 닫히지 않게
   overlay.onclick = () => {};
 
-  // X 버튼 닫기
+  // 팝업 내부 클릭 전파 차단(혹시 모를 이벤트 대비)
+  popup.onclick = (e) => e.stopPropagation();
+
+  // X 버튼 = 그냥 닫기(저장 X)
   closeBtn.onclick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     hideOnly();
   };
 
-  // 하단 닫기 버튼
-  closeBtn2.onclick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    hideOnly();
-  };
-
-  // 다시 보지 않기
+  // 다시 보지 않기 = 저장 + 닫기
   dontBtn.onclick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     hideAndSave();
-  };
-
-  // 팝업 내부 클릭은 overlay로 안 튀게
-  popup.onclick = (e) => {
-    e.stopPropagation();
   };
 
   overlay.classList.remove("hidden");
