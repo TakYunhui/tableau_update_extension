@@ -1,32 +1,27 @@
-body { margin: 0; font-family: sans-serif; background: transparent; }
+/* dialog는 이미 Tableau가 모달 프레임을 만들어줌
+   여기서는 "내용"만 깔끔하게 배치 */
 
-/* dialog에서는 overlay 숨김 필요 없음 */
-#overlay{
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-
+html, body {
+  margin: 0;
+  padding: 0;
   background: transparent;
-  padding: clamp(12px, 6vh, 72px) 12px 12px;
+  font-family: sans-serif;
 }
 
+/* ✅ 이제 popup은 '내용 컨테이너'일 뿐 */
 #popup{
-  position: relative;
-  width: min(820px, 100%);
-  max-height: calc(100vh - 24px);
-  overflow: auto;
-
-  background: #fff;
-  border-radius: 18px;
-  padding: 22px 22px 18px;
   box-sizing: border-box;
+  padding: 18px 18px 14px;
 
-  border: 1px solid #e6e6e6;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+  /* ❌ 이중 박스 제거 */
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+
+  /* dialog 높이 내에서 스크롤 */
+  max-height: 100vh;
+  overflow: auto;
 }
 
 /* 헤더 */
@@ -100,23 +95,4 @@ body { margin: 0; font-family: sans-serif; background: transparent; }
   margin: 10px 0;
   font-size: 16px;
   line-height: 1.55;
-}
-
-/* 모바일 대응 */
-@media (max-width: 600px){
-  #overlay{ padding: 12px 10px 10px; }
-  #popup{
-    border-radius: 14px;
-    padding: 18px 16px 14px;
-    max-height: calc(100vh - 22px);
-  }
-  .title{ font-size: 18px; }
-  .items li{ font-size: 15px; }
-  .close{
-    width: 40px;
-    height: 40px;
-    font-size: 24px;
-    line-height: 40px;
-  }
-  .dont-top{ font-size: 13px; }
 }
