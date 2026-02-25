@@ -23,10 +23,10 @@ html, body {
 
 .title-row{
   display: flex;
-  align-items: baseline;
+  align-items: center;   /* ✅ 배지/타이틀/일자 수평 정렬 안정 */
   gap: 10px;
   min-width: 0;
-  flex-wrap: wrap; /* 화면 좁으면 자연스럽게 줄바꿈 */
+  flex-wrap: wrap;
 }
 
 .title{
@@ -43,15 +43,23 @@ html, body {
   white-space: nowrap;
 }
 
-/* ✅ 대시보드명 뱃지(테두리 박스) */
+/* ✅ 산뜻한 강조 뱃지 */
 .dash-badge{
-  padding: 6px 10px;
-  border: 1px solid #d8d8d8;
-  background: #fafafa;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 7px 12px;
   border-radius: 999px;
-  font-size: 13px;
+
+  /* 산뜻한 블루 톤 */
+  background: #eaf2ff;
+  border: 1px solid #b9d3ff;
+  color: #1e4fbf;
+
+  font-size: 15px;      /* ✅ 글자 키움 */
   font-weight: 900;
-  color: #222;
+  letter-spacing: 0.2px;
   white-space: nowrap;
 }
 
@@ -78,5 +86,5 @@ html, body {
   .title{ font-size: 18px; }
   .items li{ font-size: 15px; }
   .header-date{ font-size: 13px; }
-  .dash-badge{ font-size: 12px; padding: 5px 9px; }
+  .dash-badge{ font-size: 14px; padding: 6px 11px; }
 }
