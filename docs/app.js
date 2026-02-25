@@ -1,10 +1,10 @@
-// app.js?v=11
+// app.js?v=13
 if (typeof tableau === "undefined") {
   throw new Error("tableau is not defined");
 }
 
 const CONFIG_URL = "https://takyunhui.github.io/tableau_update_extension/updates.json";
-const EXT_VER = "11";
+const EXT_VER = "13";
 
 function seenKey(dashboardName) {
   return `seenVersion:${dashboardName}`;
@@ -46,6 +46,17 @@ function buildDialogUrl(payloadString) {
   return dialog.toString();
 }
 
+// ✅ “한 번 닫으면 다음엔 안 뜸”을 보장하려면:
+//    dialog를 열기 직전에 seen 저장을 먼저 해버리면 됨
+async function markSeen(dashboardName, version) {
+  // localStorage는 즉시 반영
+  localStorage.setItem(storageKey(dashboardName), version);
+
+  // settings는 Cloud 안정성용(비동기 저장)
+  tableau.extensions.settings.set(seenKey(dashboardName), version);
+  await tableau.extensions.settings.saveAsync();
+}
+
 (async function main() {
   try {
     await tableau.extensions.initializeAsync();
@@ -58,15 +69,15 @@ function buildDialogUrl(payloadString) {
     // 1) 버전 없으면 종료
     if (!config?.version) return;
 
-    // 2) 변경사항 없으면 종료 (dialog 자체를 안 열음)
+    // 2) 변경사항 없으면 종료
     const items = normalizeItems(config.items);
     if (items.length === 0) return;
 
-    // 3) 같은 버전 다시보지않기면 종료 (settings/local 둘 중 하나라도 일치하면 종료)
+    // 3) 이미 본 버전이면 종료
     const { settingsSeen, localSeen } = getSeenVersions(dashboardName);
     if (settingsSeen === config.version || localSeen === config.version) return;
 
-    // 4) dialog 재-fetch 없이 payload로 전달
+    // 4) payload
     const payload = JSON.stringify({
       dashboardName,
       version: config.version,
@@ -75,6 +86,10 @@ function buildDialogUrl(payloadString) {
       extVer: EXT_VER
     });
 
+    // ✅ 중요: dialog 열기 전에 먼저 seen 저장
+    await markSeen(dashboardName, config.version);
+
+    // 5) dialog 표시
     const dialogUrl = buildDialogUrl(payload);
 
     try {
@@ -83,11 +98,10 @@ function buildDialogUrl(payloadString) {
         height: 520
       });
     } catch (err) {
-      // ✅ 사용자가 X/ESC 등으로 닫은 건 정상: 조용히 무시
+      // 사용자가 X/ESC로 닫는 건 정상: 조용히 무시
       const msg = String(err?.message || err);
       if (msg.includes("dialog-closed-by-user")) return;
 
-      // 그 외 진짜 오류만 콘솔에 남김
       console.error(err);
     }
   } catch (e) {
