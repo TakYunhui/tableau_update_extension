@@ -1,4 +1,4 @@
-// app.js?v=10
+// app.js?v=11
 if (typeof tableau === "undefined") {
   const d = document.getElementById("debug");
   if (d) {
@@ -9,7 +9,7 @@ if (typeof tableau === "undefined") {
 }
 
 const CONFIG_URL = "https://takyunhui.github.io/tableau_update_extension/updates.json";
-const EXT_VER = "10";
+const EXT_VER = "11";
 
 function seenKey(dashboardName) {
   return `seenVersion:${dashboardName}`;
@@ -44,17 +44,18 @@ function getSeenVersions(dashboardName) {
   return { settingsSeen, localSeen };
 }
 
-// ✅ payload를 URL query로도 실어 보내기 (dialogPayload가 비는 Cloud 케이스 대응)
+// ✅ Base64로 안전하게 URL에 실어보내기(한글/특수문자 안전)
+function toB64(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
 function buildDialogUrl(payloadString) {
   const base = new URL(window.location.href);
   const dialog = new URL("dialog.html", base);
 
   dialog.searchParams.set("v", EXT_VER);
   dialog.searchParams.set("cb", String(Date.now()));
-
-  // URL에 payload를 같이 실어 보냄 (fallback 용)
-  // payload가 커지면 URL 길이 문제가 생길 수 있지만, 지금 구조는 충분히 짧음
-  dialog.searchParams.set("p", encodeURIComponent(payloadString));
+  dialog.searchParams.set("p64", toB64(payloadString));
 
   return dialog.toString();
 }
@@ -63,16 +64,13 @@ function buildDialogUrl(payloadString) {
   try {
     await tableau.extensions.initializeAsync();
 
-    const dashboard = tableau.extensions.dashboardContent.dashboard;
-    const dashboardName = (dashboard.name || "").trim();
-
+    const dashboardName = (tableau.extensions.dashboardContent.dashboard.name || "").trim();
     debugLog(`dashboardName="${dashboardName}"`);
 
     const data = await fetchJson(CONFIG_URL);
     const config = data?.dashboardsByName?.[dashboardName];
 
     debugLog(`config.version="${config?.version ?? ""}"`);
-
     if (!config?.version) {
       debugLog("STOP: no version");
       return;
@@ -80,7 +78,6 @@ function buildDialogUrl(payloadString) {
 
     const items = normalizeItems(config.items);
     debugLog(`items.length=${items.length}`);
-
     if (items.length === 0) {
       debugLog("STOP: no items");
       return;
@@ -105,12 +102,17 @@ function buildDialogUrl(payloadString) {
     const dialogUrl = buildDialogUrl(payload);
     debugLog(`OPEN dialog url=${dialogUrl}`);
 
-    // ✅ dialogPayload로도 전달 (되는 환경에서는 이게 더 깔끔)
-    await tableau.extensions.ui.displayDialogAsync(
-      dialogUrl,
-      payload,
-      { width: 600, height: 520 }
-    );
+    try {
+      await tableau.extensions.ui.displayDialogAsync(dialogUrl, payload, { width: 600, height: 520 });
+    } catch (err) {
+      // ✅ 사용자가 닫은 건 정상(에러로 취급하지 않음)
+      const msg = String(err?.message || err);
+      if (msg.includes("dialog-closed-by-user")) {
+        debugLog("Dialog closed by user (ignored).");
+        return;
+      }
+      throw err;
+    }
   } catch (e) {
     console.error(e);
     debugLog(`ERROR: ${String(e?.message || e)}`);
