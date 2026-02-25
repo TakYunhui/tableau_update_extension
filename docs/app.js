@@ -15,22 +15,20 @@ function storageKey(dashboardName) {
 }
 
 async function fetchJson(url) {
-  const res = await fetch(`${url}?v=${Date.now()}`); // 캐시 방지
+  const res = await fetch(`${url}?v=${Date.now()}`);
   if (!res.ok) throw new Error(`Config fetch failed: ${res.status}`);
   return res.json();
 }
 
-/**
- * dialog.html 경로를 안전하게 만들기
- * - index.html이 GitHub Pages 루트(또는 폴더)에서 열리므로
- * - 같은 폴더의 dialog.html을 상대경로로 참조하면 안정적
- */
 function getDialogUrl() {
-  // 예: https://.../tableau_update_extension/index.html
-  // -> https://.../tableau_update_extension/dialog.html
   const u = new URL(window.location.href);
   u.pathname = u.pathname.replace(/index\.html?$/i, "dialog.html");
   return u.toString();
+}
+
+function hasItems(config) {
+  const items = Array.isArray(config?.items) ? config.items : [];
+  return items.some((x) => String(x ?? "").trim().length > 0);
 }
 
 (async function main() {
@@ -46,16 +44,16 @@ function getDialogUrl() {
     // 업데이트 없으면 종료
     if (!config || !config.version) return;
 
+    // ✅ 변경 사항(items) 없으면 아예 띄우지 않음
+    if (!hasItems(config)) return;
+
     // 같은 버전 다시보지않기면 종료
     const seen = localStorage.getItem(storageKey(dashboardName));
     if (seen === config.version) return;
 
-    // Dialog로 팝업 띄우기
-    // payload에는 필요한 최소만 넘기고, dialog에서 updates.json을 다시 fetch해서 렌더링(권장)
     const payload = JSON.stringify({
       dashboardName,
       version: config.version,
-      // title은 dialog에서 config.title을 쓰지만, 혹시 못 가져올 때 대비로 같이 넘겨도 됨
       title: config.title || "업데이트 안내"
     });
 
@@ -64,8 +62,6 @@ function getDialogUrl() {
       payload,
       { width: 600, height: 520 }
     );
-
-    // 닫기/다시보지않기는 dialog.js에서 처리한다.
   } catch (e) {
     console.error(e);
     const d = document.getElementById("debug");
