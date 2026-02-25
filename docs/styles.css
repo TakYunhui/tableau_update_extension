@@ -1,10 +1,6 @@
-/* styles.css */
-body { margin: 0; font-family: sans-serif; }
+body { margin: 0; font-family: sans-serif; background: transparent; }
 
-
-/* ✅ 숨김은 overlay에만 적용해도 충분 */
-#overlay.hidden { display: none; }
-
+/* dialog에서는 overlay 숨김 필요 없음 */
 #overlay{
   position: fixed;
   inset: 0;
@@ -14,10 +10,7 @@ body { margin: 0; font-family: sans-serif; }
   justify-content: center;
   align-items: flex-start;
 
-  /* ✅ 딤 제거 */
   background: transparent;
-
-  /* ✅ 화면 크기에 따라 자동 여백 */
   padding: clamp(12px, 6vh, 72px) 12px 12px;
 }
 
@@ -36,7 +29,7 @@ body { margin: 0; font-family: sans-serif; }
   box-shadow: 0 18px 40px rgba(0,0,0,0.18);
 }
 
-/* ✅ 헤더 레이아웃 */
+/* 헤더 */
 .header{
   display: flex;
   justify-content: space-between;
@@ -45,9 +38,7 @@ body { margin: 0; font-family: sans-serif; }
   margin-bottom: 12px;
 }
 
-.header-left{
-  min-width: 0;
-}
+.header-left{ min-width: 0; }
 
 .title{
   font-weight: 800;
@@ -61,7 +52,7 @@ body { margin: 0; font-family: sans-serif; }
   color: #444;
 }
 
-/* ✅ 우측 상단 액션들 */
+/* 우측 상단 액션들 */
 .header-actions{
   display: flex;
   align-items: center;
@@ -69,7 +60,7 @@ body { margin: 0; font-family: sans-serif; }
   flex-shrink: 0;
 }
 
-/* ✅ 다시 보지 않기: 보조 액션(링크 느낌) */
+/* 다시 보지 않기 */
 .dont-top{
   background: none;
   border: none;
@@ -85,7 +76,7 @@ body { margin: 0; font-family: sans-serif; }
   text-decoration: underline;
 }
 
-/* ✅ X 버튼 */
+/* X 버튼 */
 .close{
   width: 44px;
   height: 44px;
@@ -105,18 +96,15 @@ body { margin: 0; font-family: sans-serif; }
   margin: 8px 0 0;
   padding-left: 22px;
 }
-
 .items li{
   margin: 10px 0;
   font-size: 16px;
   line-height: 1.55;
 }
 
-/* 모바일 대응(깨짐 방지) */
+/* 모바일 대응 */
 @media (max-width: 600px){
-  #overlay{
-    padding: 12px 10px 10px;
-  }
+  #overlay{ padding: 12px 10px 10px; }
   #popup{
     border-radius: 14px;
     padding: 18px 16px 14px;
