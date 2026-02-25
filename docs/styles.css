@@ -5,32 +5,28 @@ html, body {
   font-family: sans-serif;
 }
 
-/* ✅ dialog 내부 컨텐츠를 더 안쪽으로 */
 #popup{
   box-sizing: border-box;
-  padding: 22px 22px 18px;   /* 전체 padding 증가 */
+  padding: 22px 22px 18px;
   max-height: 100vh;
   overflow: auto;
 }
 
-/* 헤더: 좌(제목+일자) / 우(다시보지않기) 같은 줄 정렬 */
 .header{
   display: flex;
   justify-content: space-between;
-  align-items: center;        /* ✅ 세로 정렬 맞춤 */
+  align-items: center;
   gap: 14px;
 }
 
-.header-left{
-  min-width: 0;
-}
+.header-left{ min-width: 0; }
 
-/* 제목 + 일자 같은 줄 */
 .title-row{
   display: flex;
   align-items: baseline;
   gap: 10px;
   min-width: 0;
+  flex-wrap: wrap; /* 화면 좁으면 자연스럽게 줄바꿈 */
 }
 
 .title{
@@ -47,34 +43,24 @@ html, body {
   white-space: nowrap;
 }
 
-/* 다시 보지 않기 버튼 */
-.header-actions{
-  flex-shrink: 0;
-}
-
-.dont-top{
-  background: #f2f2f2;        /* ✅ 링크 느낌보다 버튼 느낌으로 가독성 */
-  border: 1px solid #e0e0e0;
-  padding: 10px 12px;
-  font-size: 14px;
-  font-weight: 800;
+/* ✅ 대시보드명 뱃지(테두리 박스) */
+.dash-badge{
+  padding: 6px 10px;
+  border: 1px solid #d8d8d8;
+  background: #fafafa;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
   color: #222;
-  cursor: pointer;
-  border-radius: 10px;
   white-space: nowrap;
 }
-.dont-top:hover{
-  background: #e8e8e8;
-}
 
-/* ✅ 구분선 */
 .divider{
   height: 1px;
   background: #e6e6e6;
   margin: 14px 0 14px;
 }
 
-/* 아이템 목록: 가독성 강화 */
 .items{
   margin: 0;
   padding-left: 20px;
@@ -87,19 +73,10 @@ html, body {
   color: #111;
 }
 
-/* 하단 업데이트 일자(선택) */
-.updated-at{
-  margin-top: 14px;
-  font-size: 13px;
-  color: #666;
-  font-weight: 800;
-}
-
-/* 모바일 */
 @media (max-width: 600px){
   #popup{ padding: 18px 16px 14px; }
   .title{ font-size: 18px; }
   .items li{ font-size: 15px; }
-  .dont-top{ font-size: 13px; padding: 9px 10px; }
   .header-date{ font-size: 13px; }
+  .dash-badge{ font-size: 12px; padding: 5px 9px; }
 }
