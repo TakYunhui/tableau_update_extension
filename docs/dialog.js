@@ -1,6 +1,4 @@
-// dialog.js?v=9
-// ✅ app.js에서 payload로 title/version/items/dashboardName을 넘겨주므로
-// ✅ 여기서는 updates.json 재-fetch 하지 않음 (캐시/불일치/플리커 방지)
+// dialog.js?v=10
 
 function seenKey(dashboardName) {
   return `seenVersion:${dashboardName}`;
@@ -11,7 +9,7 @@ function storageKey(dashboardName) {
 
 function formatDateFromVersion(version) {
   if (!version) return "";
-  const parts = String(version).split("-").slice(0, 3); // YYYY-MM-DD
+  const parts = String(version).split("-").slice(0, 3);
   if (parts.length !== 3) return "";
   return `${parts[0]}.${parts[1]}.${parts[2]}`;
 }
@@ -37,19 +35,40 @@ function renderList(items) {
   }
 }
 
+// ✅ payload 읽기: dialogPayload -> (비면) URL query p=
+function readPayload() {
+  const raw = tableau.extensions.ui.dialogPayload;
+
+  // 1) dialogPayload 우선
+  if (raw && String(raw).trim().length > 0) {
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      return { __parseError: `dialogPayload JSON parse error: ${String(e?.message || e)}`, __raw: raw };
+    }
+  }
+
+  // 2) URL query fallback
+  const p = new URLSearchParams(window.location.search).get("p");
+  if (p && p.length > 0) {
+    try {
+      const decoded = decodeURIComponent(p);
+      return JSON.parse(decoded);
+    } catch (e) {
+      return { __parseError: `query payload parse error: ${String(e?.message || e)}`, __raw: p };
+    }
+  }
+
+  return {};
+}
+
 (async function main() {
   try {
     await tableau.extensions.initializeDialogAsync();
 
-    // payload 파싱
-    let payload = {};
-    try {
-      payload = JSON.parse(tableau.extensions.ui.dialogPayload || "{}");
-    } catch (e) {
-      payload = { __parseError: String(e?.message || e) };
-    }
+    const payload = readPayload();
 
-    // 🔎 디버그 출력(원인 확인용)
+    // 🔎 디버그 표시
     const dbg = document.getElementById("debugDialog");
     if (dbg) dbg.textContent = JSON.stringify(payload, null, 2);
 
@@ -58,41 +77,37 @@ function renderList(items) {
     const title = payload.title || "업데이트 안내";
     const items = normalizeItems(payload.items);
 
-    // title
     setText("title", title);
 
-    // 최소 방어: payload가 비정상이면 화면에 원인 표시하고 종료(자동 닫기 X)
+    // payload가 비정상이면 원인 표시하고 종료(자동닫기 X)
     if (!dashboardName) {
-      setText("updatedAt", "오류: dashboardName 없음 (payload 전달 실패/캐시 가능)");
+      setText("updatedAt", "오류: dashboardName 없음 (payload 전달 실패)");
       renderList([`payload=${JSON.stringify(payload)}`]);
       return;
     }
     if (!version) {
-      setText("updatedAt", "오류: version 없음 (payload 전달 실패/캐시 가능)");
+      setText("updatedAt", "오류: version 없음 (payload 전달 실패)");
       renderList([`payload=${JSON.stringify(payload)}`]);
       return;
     }
     if (items.length === 0) {
-      setText("updatedAt", "오류: items 없음 (app.js가 items를 payload에 넣지 않았거나 캐시 가능)");
+      setText("updatedAt", "오류: items 없음 (payload 전달 실패 또는 app.js 구버전)");
       renderList([`payload=${JSON.stringify(payload)}`]);
       return;
     }
 
-    // items 렌더
     renderList(items);
 
-    // 업데이트 일자 (내역 아래)
     const d = formatDateFromVersion(version);
     setText("updatedAt", d ? `업데이트 일자: ${d}` : "");
 
-    // 다시 보지 않기
     const dontBtn = document.getElementById("dontShowBtn");
     if (dontBtn) {
       dontBtn.onclick = async (e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        // ✅ Cloud/환경별 편차 대비: settings + localStorage 둘 다 저장
+        // settings + localStorage 둘 다 저장
         tableau.extensions.settings.set(seenKey(dashboardName), version);
         await tableau.extensions.settings.saveAsync();
 
