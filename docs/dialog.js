@@ -1,4 +1,4 @@
-// dialog.js?v=13
+// dialog.js?v=14
 
 function fromB64(b64) {
   return decodeURIComponent(escape(atob(b64)));
@@ -37,11 +37,13 @@ function readPayload() {
   if (raw && String(raw).trim().length > 0) {
     try { return JSON.parse(raw); } catch {}
   }
+
   const qs = new URLSearchParams(window.location.search);
   const p64 = qs.get("p64");
   if (p64) {
     try { return JSON.parse(fromB64(p64)); } catch {}
   }
+
   return {};
 }
 
@@ -50,13 +52,21 @@ function readPayload() {
     await tableau.extensions.initializeDialogAsync();
 
     const payload = readPayload();
+    const dashboardName = (payload.dashboardName || "").trim();
     const version = payload.version || "";
     const items = normalizeItems(payload.items);
 
     // payload 이상하면 조용히 닫기
-    if (!version || items.length === 0) {
+    if (!dashboardName || !version || items.length === 0) {
       tableau.extensions.ui.closeDialog("invalid_payload");
       return;
+    }
+
+    // ✅ 헤더: 대시보드명 뱃지 표시
+    const badge = document.getElementById("dashBadge");
+    if (badge) {
+      badge.textContent = dashboardName; // 예: '구매 대시보드'
+      badge.style.display = "inline-flex";
     }
 
     // 헤더 날짜 (일자: 26.02.25)
@@ -64,6 +74,8 @@ function readPayload() {
     setText("headerDate", headerDate ? `(일자: ${headerDate})` : "");
 
     renderList(items);
-
-
+  } catch (e) {
+    try { tableau.extensions.ui.closeDialog("error"); } catch (_) {}
+    console.error(e);
+  }
 })();
