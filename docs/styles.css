@@ -1,6 +1,3 @@
-/* dialog는 이미 Tableau가 모달 프레임을 만들어줌
-   여기서는 "내용"만 깔끔하게 배치 */
-
 html, body {
   margin: 0;
   padding: 0;
@@ -8,23 +5,19 @@ html, body {
   font-family: sans-serif;
 }
 
-/* ✅ 이제 popup은 '내용 컨테이너'일 뿐 */
 #popup{
   box-sizing: border-box;
   padding: 18px 18px 14px;
 
-  /* ❌ 이중 박스 제거 */
   background: transparent;
   border: none;
   border-radius: 0;
   box-shadow: none;
 
-  /* dialog 높이 내에서 스크롤 */
   max-height: 100vh;
   overflow: auto;
 }
 
-/* 헤더 */
 .header{
   display: flex;
   justify-content: space-between;
@@ -33,21 +26,12 @@ html, body {
   margin-bottom: 12px;
 }
 
-.header-left{ min-width: 0; }
-
 .title{
   font-weight: 800;
   font-size: 22px;
   line-height: 1.2;
 }
 
-.version{
-  margin-top: 8px;
-  font-size: 15px;
-  color: #444;
-}
-
-/* 우측 상단 액션들 */
 .header-actions{
   display: flex;
   align-items: center;
@@ -55,7 +39,6 @@ html, body {
   flex-shrink: 0;
 }
 
-/* 다시 보지 않기 */
 .dont-top{
   background: none;
   border: none;
@@ -71,22 +54,6 @@ html, body {
   text-decoration: underline;
 }
 
-/* X 버튼 */
-.close{
-  width: 44px;
-  height: 44px;
-  border: none;
-  background: #f2f2f2;
-  border-radius: 10px;
-
-  font-size: 28px;
-  cursor: pointer;
-  line-height: 44px;
-  text-align: center;
-}
-.close:hover { background: #e0e0e0; }
-
-/* 아이템 목록 */
 .items{
   margin: 8px 0 0;
   padding-left: 22px;
@@ -95,4 +62,21 @@ html, body {
   margin: 10px 0;
   font-size: 16px;
   line-height: 1.55;
+}
+
+/* ✅ 내역 아래 업데이트 일자 */
+.updated-at{
+  margin-top: 14px;
+  font-size: 14px;
+  color: #444;
+  font-weight: 700;
+}
+
+/* 모바일 */
+@media (max-width: 600px){
+  #popup{ padding: 16px 14px 12px; }
+  .title{ font-size: 18px; }
+  .items li{ font-size: 15px; }
+  .dont-top{ font-size: 13px; }
+  .updated-at{ font-size: 13px; }
 }
