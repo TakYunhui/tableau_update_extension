@@ -11,16 +11,18 @@
     <div class="header">
       <div class="header-left">
         <div id="title" class="title">업데이트 안내</div>
-        <div id="version" class="version"></div>
       </div>
 
       <div class="header-actions">
         <button id="dontShowBtn" type="button" class="dont-top">다시 보지 않기</button>
-        <button id="closeBtn" type="button" class="close" aria-label="닫기">×</button>
+        <!-- ✅ 내부 X 버튼 삭제 (Tableau dialog 프레임 X만 사용) -->
       </div>
     </div>
 
     <ul id="items" class="items"></ul>
+
+    <!-- ✅ 내역 아래 업데이트 일자 -->
+    <div id="updatedAt" class="updated-at"></div>
   </div>
 
   <script src="dialog.js"></script>
