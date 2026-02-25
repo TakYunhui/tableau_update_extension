@@ -6,85 +6,77 @@ function storageKey(dashboardName) {
 }
 
 async function fetchJson(url) {
-  const res = await fetch(`${url}?v=${Date.now()}`); // 캐시 방지
+  const res = await fetch(`${url}?v=${Date.now()}`);
   if (!res.ok) throw new Error(`Config fetch failed: ${res.status}`);
   return res.json();
 }
 
+function formatDateFromVersion(version) {
+  if (!version) return "";
+  const parts = String(version).split("-").slice(0, 3); // YYYY-MM-DD
+  if (parts.length !== 3) return "";
+  return `${parts[0]}.${parts[1]}.${parts[2]}`;
+}
+
+function normalizeItems(items) {
+  const arr = Array.isArray(items) ? items : [];
+  return arr
+    .map((x) => String(x ?? "").trim())
+    .filter((s) => s.length > 0);
+}
+
 function renderPopup(config) {
   const titleEl = document.getElementById("title");
-  const versionEl = document.getElementById("version");
   const itemsEl = document.getElementById("items");
+  const updatedAtEl = document.getElementById("updatedAt");
 
   titleEl.textContent = config.title || "업데이트 안내";
 
-  if (config.version) {
-    const datePart = config.version.split("-").slice(0, 3).join(".");
-    versionEl.textContent = `업데이트 일자: ${datePart}`;
-  } else {
-    versionEl.textContent = "";
+  const items = normalizeItems(config.items);
+  itemsEl.innerHTML = "";
+
+  for (const t of items) {
+    const li = document.createElement("li");
+    li.textContent = t;
+    itemsEl.appendChild(li);
   }
 
-  itemsEl.innerHTML = "";
-  const items = Array.isArray(config.items) ? config.items : [];
-  if (items.length === 0) {
-    const li = document.createElement("li");
-    li.textContent = "변경 사항이 등록되지 않았습니다.";
-    itemsEl.appendChild(li);
-  } else {
-    for (const t of items) {
-      const li = document.createElement("li");
-      li.textContent = String(t);
-      itemsEl.appendChild(li);
-    }
-  }
+  const d = formatDateFromVersion(config.version);
+  updatedAtEl.textContent = d ? `업데이트 일자: ${d}` : "";
 }
 
 (async function main() {
   try {
     await tableau.extensions.initializeDialogAsync();
 
-    // app.js에서 넘겨준 payload
     const payloadRaw = tableau.extensions.ui.dialogPayload;
     let payload = {};
     try { payload = JSON.parse(payloadRaw || "{}"); } catch (_) {}
 
     const dashboardName = (payload.dashboardName || "").trim();
-    const versionFromHost = payload.version;
 
-    // json에서 최신 config를 다시 가져와서 렌더링(운영 안정적)
     const data = await fetchJson(CONFIG_URL);
     const config = data?.dashboardsByName?.[dashboardName];
 
-    // 안전장치: 혹시 config가 없으면 payload의 title이라도 표시
-    const safeConfig = config || { title: payload.title || "업데이트 안내", version: versionFromHost, items: [] };
+    // ✅ 변경사항 없으면 dialog를 즉시 닫아버림 (안전장치)
+    const items = normalizeItems(config?.items);
+    if (!config?.version || items.length === 0) {
+      tableau.extensions.ui.closeDialog("no_items");
+      return;
+    }
 
-    renderPopup(safeConfig);
+    renderPopup(config);
 
-    const closeBtn = document.getElementById("closeBtn");
     const dontBtn = document.getElementById("dontShowBtn");
-
-    // X 버튼 = 그냥 닫기(저장 X)
-    closeBtn.onclick = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      tableau.extensions.ui.closeDialog("closed");
-    };
-
-    // 다시 보지 않기 = localStorage 저장 + 닫기
     dontBtn.onclick = (e) => {
       e.preventDefault();
       e.stopPropagation();
 
-      const v = safeConfig.version || versionFromHost;
-      if (dashboardName && v) {
-        localStorage.setItem(storageKey(dashboardName), v);
-      }
+      localStorage.setItem(storageKey(dashboardName), config.version);
       tableau.extensions.ui.closeDialog("dont_show");
     };
   } catch (e) {
     console.error(e);
-    // dialog에서는 화면에 에러 메시지라도 간단히 남김
     const itemsEl = document.getElementById("items");
     if (itemsEl) {
       itemsEl.innerHTML = "";
