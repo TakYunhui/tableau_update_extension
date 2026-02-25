@@ -39,21 +39,17 @@ function renderList(items) {
   }
 }
 
-// ✅ payload 읽기: dialogPayload 우선 -> 없으면 URL p64
+// payload 읽기: dialogPayload 우선 -> 없으면 URL p64
 function readPayload() {
   const raw = tableau.extensions.ui.dialogPayload;
   if (raw && String(raw).trim().length > 0) {
-    try { return JSON.parse(raw); } catch (e) {
-      return { __parseError: `dialogPayload parse error: ${String(e?.message || e)}`, __raw: raw };
-    }
+    try { return JSON.parse(raw); } catch { /* fallthrough */ }
   }
 
   const qs = new URLSearchParams(window.location.search);
   const p64 = qs.get("p64");
   if (p64) {
-    try { return JSON.parse(fromB64(p64)); } catch (e) {
-      return { __parseError: `p64 parse error: ${String(e?.message || e)}`, __raw: p64 };
-    }
+    try { return JSON.parse(fromB64(p64)); } catch { /* fallthrough */ }
   }
 
   return {};
@@ -65,23 +61,18 @@ function readPayload() {
 
     const payload = readPayload();
 
-    // 디버그 표시
-    const dbg = document.getElementById("debugDialog");
-    if (dbg) dbg.textContent = JSON.stringify(payload, null, 2);
-
     const dashboardName = (payload.dashboardName || "").trim();
     const version = payload.version || "";
     const title = payload.title || "업데이트 안내";
     const items = normalizeItems(payload.items);
 
-    setText("title", title);
-
+    // payload가 비정상이면 사용자에게 보이지 않게 조용히 닫음
     if (!dashboardName || !version || items.length === 0) {
-      setText("updatedAt", "오류: payload 전달 실패 (debugDialog 확인)");
-      renderList([`payload=${JSON.stringify(payload)}`]);
+      tableau.extensions.ui.closeDialog("invalid_payload");
       return;
     }
 
+    setText("title", title);
     renderList(items);
 
     const d = formatDateFromVersion(version);
@@ -93,6 +84,7 @@ function readPayload() {
         e.preventDefault();
         e.stopPropagation();
 
+        // Cloud/환경별 편차 대비: settings + localStorage 둘 다 저장
         tableau.extensions.settings.set(seenKey(dashboardName), version);
         await tableau.extensions.settings.saveAsync();
         localStorage.setItem(storageKey(dashboardName), version);
@@ -101,7 +93,8 @@ function readPayload() {
       };
     }
   } catch (e) {
+    // dialog 내부에서도 사용자에게는 아무것도 안 보여주고 닫음
+    try { tableau.extensions.ui.closeDialog("error"); } catch (_) {}
     console.error(e);
-    setText("updatedAt", `오류: ${String(e?.message || e)}`);
   }
 })();
