@@ -1,10 +1,14 @@
-// dialog.js?v=10
+// dialog.js?v=11
 
 function seenKey(dashboardName) {
   return `seenVersion:${dashboardName}`;
 }
 function storageKey(dashboardName) {
   return `updatePopup_seenVersion_${dashboardName}`;
+}
+
+function fromB64(b64) {
+  return decodeURIComponent(escape(atob(b64)));
 }
 
 function formatDateFromVersion(version) {
@@ -35,27 +39,20 @@ function renderList(items) {
   }
 }
 
-// ✅ payload 읽기: dialogPayload -> (비면) URL query p=
+// ✅ payload 읽기: dialogPayload 우선 -> 없으면 URL p64
 function readPayload() {
   const raw = tableau.extensions.ui.dialogPayload;
-
-  // 1) dialogPayload 우선
   if (raw && String(raw).trim().length > 0) {
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      return { __parseError: `dialogPayload JSON parse error: ${String(e?.message || e)}`, __raw: raw };
+    try { return JSON.parse(raw); } catch (e) {
+      return { __parseError: `dialogPayload parse error: ${String(e?.message || e)}`, __raw: raw };
     }
   }
 
-  // 2) URL query fallback
-  const p = new URLSearchParams(window.location.search).get("p");
-  if (p && p.length > 0) {
-    try {
-      const decoded = decodeURIComponent(p);
-      return JSON.parse(decoded);
-    } catch (e) {
-      return { __parseError: `query payload parse error: ${String(e?.message || e)}`, __raw: p };
+  const qs = new URLSearchParams(window.location.search);
+  const p64 = qs.get("p64");
+  if (p64) {
+    try { return JSON.parse(fromB64(p64)); } catch (e) {
+      return { __parseError: `p64 parse error: ${String(e?.message || e)}`, __raw: p64 };
     }
   }
 
@@ -68,7 +65,7 @@ function readPayload() {
 
     const payload = readPayload();
 
-    // 🔎 디버그 표시
+    // 디버그 표시
     const dbg = document.getElementById("debugDialog");
     if (dbg) dbg.textContent = JSON.stringify(payload, null, 2);
 
@@ -79,19 +76,8 @@ function readPayload() {
 
     setText("title", title);
 
-    // payload가 비정상이면 원인 표시하고 종료(자동닫기 X)
-    if (!dashboardName) {
-      setText("updatedAt", "오류: dashboardName 없음 (payload 전달 실패)");
-      renderList([`payload=${JSON.stringify(payload)}`]);
-      return;
-    }
-    if (!version) {
-      setText("updatedAt", "오류: version 없음 (payload 전달 실패)");
-      renderList([`payload=${JSON.stringify(payload)}`]);
-      return;
-    }
-    if (items.length === 0) {
-      setText("updatedAt", "오류: items 없음 (payload 전달 실패 또는 app.js 구버전)");
+    if (!dashboardName || !version || items.length === 0) {
+      setText("updatedAt", "오류: payload 전달 실패 (debugDialog 확인)");
       renderList([`payload=${JSON.stringify(payload)}`]);
       return;
     }
@@ -107,10 +93,8 @@ function readPayload() {
         e.preventDefault();
         e.stopPropagation();
 
-        // settings + localStorage 둘 다 저장
         tableau.extensions.settings.set(seenKey(dashboardName), version);
         await tableau.extensions.settings.saveAsync();
-
         localStorage.setItem(storageKey(dashboardName), version);
 
         tableau.extensions.ui.closeDialog("dont_show");
