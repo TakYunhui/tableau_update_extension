@@ -9,23 +9,20 @@ if (typeof tableau === "undefined") {
 }
 
 const CONFIG_URL = "https://takyunhui.github.io/tableau_update_extension/updates.json";
-
-// 배포/캐시 이슈 있을 때만 숫자 올려서 쓰면 됨(선택)
 const EXT_VER = "1";
 
-function storageKey(dashboardName) {
-  return `updatePopup_seenVersion_${dashboardName}`;
+function seenKey(dashboardName) {
+  // settings 키는 문자열이면 OK. 너무 길면 곤란하니 간단히.
+  return `seenVersion:${dashboardName}`;
 }
 
 async function fetchJson(url) {
-  const res = await fetch(`${url}?cb=${Date.now()}`); // 캐시 방지
+  const res = await fetch(`${url}?cb=${Date.now()}`);
   if (!res.ok) throw new Error(`Config fetch failed: ${res.status}`);
   return res.json();
 }
 
 function getDialogUrl() {
-  // ✅ Cloud에서 window.location이 index.html이 아닐 수도 있어서 "상대경로"로 생성
-  // ✅ dialog도 캐시 방지 파라미터 강제 부여
   const base = new URL(window.location.href);
   const dialog = new URL("dialog.html", base);
   dialog.searchParams.set("v", EXT_VER);
@@ -38,6 +35,11 @@ function normalizeItems(items) {
   return arr.map((x) => String(x ?? "").trim()).filter(Boolean);
 }
 
+function getSeenVersionFromSettings(dashboardName) {
+  // settings는 initializeAsync 이후 사용 가능
+  return tableau.extensions.settings.get(seenKey(dashboardName)) || null;
+}
+
 (async function main() {
   try {
     await tableau.extensions.initializeAsync();
@@ -48,18 +50,18 @@ function normalizeItems(items) {
     const data = await fetchJson(CONFIG_URL);
     const config = data?.dashboardsByName?.[dashboardName];
 
-    // 1) 업데이트(버전) 없으면 종료
+    // 1) 버전 없으면 종료
     if (!config?.version) return;
 
-    // 2) ✅ 변경 사항(items) 없으면 아예 dialog를 열지 않음 (플리커 방지 핵심)
+    // 2) 변경사항 없으면 종료 (아예 dialog 안 열기)
     const items = normalizeItems(config.items);
     if (items.length === 0) return;
 
-    // 3) 같은 버전 다시보지않기면 종료
-    const seen = localStorage.getItem(storageKey(dashboardName));
+    // 3) 같은 버전 다시보지않기면 종료 (settings 기반)
+    const seen = getSeenVersionFromSettings(dashboardName);
     if (seen === config.version) return;
 
-    // 4) ✅ dialog에서 재-fetch 하지 않게 items까지 payload로 넘김 (불일치/플리커 방지)
+    // 4) dialog에서 재-fetch 안 하게 payload로 다 넘김
     const payload = JSON.stringify({
       dashboardName,
       version: config.version,
