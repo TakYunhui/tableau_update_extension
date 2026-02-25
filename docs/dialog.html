@@ -4,46 +4,27 @@
   <meta charset="UTF-8" />
   <title>Update Popup</title>
 
-  <!-- ✅ CSS에도 버전 파라미터 (Cloud 캐시 방지) -->
-  <link rel="stylesheet" href="styles.css?v=9" />
-
+  <link rel="stylesheet" href="styles.css?v=11" />
   <script src="lib/tableau.extensions.1.latest.min.js"></script>
 </head>
 <body>
 
   <div id="popup">
-
-    <!-- 🔎 디버그 영역 (원인 확인용, 문제 해결 후 삭제 가능) -->
-    <pre id="debugDialog"
-         style="margin:0 0 12px;
-                padding:10px;
-                background:#f6f6f6;
-                border-radius:8px;
-                font-size:12px;
-                max-height:150px;
-                overflow:auto;"></pre>
-
     <div class="header">
       <div class="header-left">
         <div id="title" class="title">업데이트 안내</div>
       </div>
 
       <div class="header-actions">
-        <button id="dontShowBtn" type="button" class="dont-top">
-          다시 보지 않기
-        </button>
+        <button id="dontShowBtn" type="button" class="dont-top">다시 보지 않기</button>
       </div>
     </div>
 
     <ul id="items" class="items"></ul>
 
-    <!-- ✅ 내역 아래 업데이트 일자 -->
     <div id="updatedAt" class="updated-at"></div>
-
   </div>
 
-  <!-- ✅ JS에도 버전 파라미터 (Cloud 캐시 방지 핵심) -->
-  <script src="dialog.js?v=9"></script>
-
+  <script src="dialog.js?v=11"></script>
 </body>
 </html>
