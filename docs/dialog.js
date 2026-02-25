@@ -1,4 +1,4 @@
-// dialog.js?v=14
+// dialog.js?v=15
 
 function fromB64(b64) {
   return decodeURIComponent(escape(atob(b64)));
@@ -11,7 +11,7 @@ function normalizeItems(items) {
 
 function formatYYMMDDFromVersion(version) {
   if (!version) return "";
-  const parts = String(version).split("-").slice(0, 3); // YYYY,MM,DD
+  const parts = String(version).split("-").slice(0, 3);
   if (parts.length !== 3) return "";
   return `${parts[0].slice(-2)}.${parts[1]}.${parts[2]}`;
 }
@@ -37,14 +37,23 @@ function readPayload() {
   if (raw && String(raw).trim().length > 0) {
     try { return JSON.parse(raw); } catch {}
   }
-
   const qs = new URLSearchParams(window.location.search);
   const p64 = qs.get("p64");
   if (p64) {
     try { return JSON.parse(fromB64(p64)); } catch {}
   }
-
   return {};
+}
+
+/* ✅ "구매 대시보드" -> "구매" */
+function badgeTextFromDashboardName(name) {
+  if (!name) return "";
+  // "대시보드" 단어 제거 + 공백 정리
+  const cleaned = String(name)
+    .replace(/대시보드/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return cleaned;
 }
 
 (async function main() {
@@ -56,20 +65,20 @@ function readPayload() {
     const version = payload.version || "";
     const items = normalizeItems(payload.items);
 
-    // payload 이상하면 조용히 닫기
     if (!dashboardName || !version || items.length === 0) {
       tableau.extensions.ui.closeDialog("invalid_payload");
       return;
     }
 
-    // ✅ 헤더: 대시보드명 뱃지 표시
+    // ✅ 뱃지 표시
     const badge = document.getElementById("dashBadge");
     if (badge) {
-      badge.textContent = dashboardName; // 예: '구매 대시보드'
+      const txt = badgeTextFromDashboardName(dashboardName);
+      badge.textContent = txt || dashboardName;
       badge.style.display = "inline-flex";
     }
 
-    // 헤더 날짜 (일자: 26.02.25)
+    // 헤더 날짜
     const headerDate = formatYYMMDDFromVersion(version);
     setText("headerDate", headerDate ? `(일자: ${headerDate})` : "");
 
