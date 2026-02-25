@@ -1,10 +1,5 @@
 // app.js?v=11
 if (typeof tableau === "undefined") {
-  const d = document.getElementById("debug");
-  if (d) {
-    d.style.display = "block";
-    d.textContent = "tableau undefined (API script not loaded)";
-  }
   throw new Error("tableau is not defined");
 }
 
@@ -16,15 +11,6 @@ function seenKey(dashboardName) {
 }
 function storageKey(dashboardName) {
   return `updatePopup_seenVersion_${dashboardName}`;
-}
-
-function debugLog(msg) {
-  console.log("[UpdatePopup]", msg);
-  const d = document.getElementById("debug");
-  if (d) {
-    d.style.display = "block";
-    d.textContent += (d.textContent ? "\n" : "") + String(msg);
-  }
 }
 
 async function fetchJson(url) {
@@ -44,7 +30,7 @@ function getSeenVersions(dashboardName) {
   return { settingsSeen, localSeen };
 }
 
-// ✅ Base64로 안전하게 URL에 실어보내기(한글/특수문자 안전)
+// 한글/특수문자 안전 Base64
 function toB64(str) {
   return btoa(unescape(encodeURIComponent(str)));
 }
@@ -65,32 +51,22 @@ function buildDialogUrl(payloadString) {
     await tableau.extensions.initializeAsync();
 
     const dashboardName = (tableau.extensions.dashboardContent.dashboard.name || "").trim();
-    debugLog(`dashboardName="${dashboardName}"`);
 
     const data = await fetchJson(CONFIG_URL);
     const config = data?.dashboardsByName?.[dashboardName];
 
-    debugLog(`config.version="${config?.version ?? ""}"`);
-    if (!config?.version) {
-      debugLog("STOP: no version");
-      return;
-    }
+    // 1) 버전 없으면 종료
+    if (!config?.version) return;
 
+    // 2) 변경사항 없으면 종료 (dialog 자체를 안 열음)
     const items = normalizeItems(config.items);
-    debugLog(`items.length=${items.length}`);
-    if (items.length === 0) {
-      debugLog("STOP: no items");
-      return;
-    }
+    if (items.length === 0) return;
 
+    // 3) 같은 버전 다시보지않기면 종료 (settings/local 둘 중 하나라도 일치하면 종료)
     const { settingsSeen, localSeen } = getSeenVersions(dashboardName);
-    debugLog(`seen(settings)="${settingsSeen ?? ""}", seen(local)="${localSeen ?? ""}"`);
+    if (settingsSeen === config.version || localSeen === config.version) return;
 
-    if (settingsSeen === config.version || localSeen === config.version) {
-      debugLog("STOP: already seen");
-      return;
-    }
-
+    // 4) dialog 재-fetch 없이 payload로 전달
     const payload = JSON.stringify({
       dashboardName,
       version: config.version,
@@ -100,21 +76,21 @@ function buildDialogUrl(payloadString) {
     });
 
     const dialogUrl = buildDialogUrl(payload);
-    debugLog(`OPEN dialog url=${dialogUrl}`);
 
     try {
-      await tableau.extensions.ui.displayDialogAsync(dialogUrl, payload, { width: 600, height: 520 });
+      await tableau.extensions.ui.displayDialogAsync(dialogUrl, payload, {
+        width: 600,
+        height: 520
+      });
     } catch (err) {
-      // ✅ 사용자가 닫은 건 정상(에러로 취급하지 않음)
+      // ✅ 사용자가 X/ESC 등으로 닫은 건 정상: 조용히 무시
       const msg = String(err?.message || err);
-      if (msg.includes("dialog-closed-by-user")) {
-        debugLog("Dialog closed by user (ignored).");
-        return;
-      }
-      throw err;
+      if (msg.includes("dialog-closed-by-user")) return;
+
+      // 그 외 진짜 오류만 콘솔에 남김
+      console.error(err);
     }
   } catch (e) {
     console.error(e);
-    debugLog(`ERROR: ${String(e?.message || e)}`);
   }
 })();
