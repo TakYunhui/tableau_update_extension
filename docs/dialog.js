@@ -65,10 +65,5 @@ function readPayload() {
 
     renderList(items);
 
-    // 하단 날짜
-    setText("updatedAt", headerDate ? `업데이트 일자: ${headerDate}` : "");
-  } catch (e) {
-    try { tableau.extensions.ui.closeDialog("error"); } catch (_) {}
-    console.error(e);
-  }
+
 })();
