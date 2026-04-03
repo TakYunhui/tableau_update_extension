@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Update Popup</title>
 
-  <link rel="stylesheet" href="styles.css?v=15" />
+  <link rel="stylesheet" href="styles.css?v=17" />
   <script src="lib/tableau.extensions.1.latest.min.js"></script>
 </head>
 <body>
@@ -25,9 +25,22 @@
 
     <div class="divider"></div>
 
-    <ul id="items" class="items"></ul>
+    <section id="summarySection" class="summary-card" style="display:none;">
+      <div class="section-label">요약 문구</div>
+      <p id="summaryText" class="summary-text"></p>
+    </section>
+
+    <section id="highlightsSection" class="content-section" style="display:none;">
+      <div class="section-label">주요 내용</div>
+      <ul id="items" class="items"></ul>
+    </section>
+
+    <section id="detailsSection" class="content-section" style="display:none;">
+      <div class="section-label">상세 안내</div>
+      <div id="detailsList" class="details-list"></div>
+    </section>
   </div>
 
-  <script src="dialog.js?v=15"></script>
+  <script src="dialog.js?v=17"></script>
 </body>
 </html>
